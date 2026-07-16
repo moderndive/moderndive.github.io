@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ModernDive — Open resources for statistical inference via data science</title>
+<meta name="description" content="ModernDive on GitHub: an open-source textbook, tidyverse-friendly R and Python packages, and ready-to-teach datasets for statistics and data science courses.">
+</head>
+<body>
+<style>
+  :root {
+    --ground: #F2F7F9;
+    --ground-deep: #E4EEF2;
+    --ground-deeper: #D6E5EB;
+    --panel: #FFFFFF;
+    --ink: #123344;
+    --ink-soft: #3E5A69;
+    --ink-faint: #64808E;
+    --accent: #1263B2;
+    --accent-ink: #0E538F;
+    --hairline: #C3D6DE;
+    --hero-top: #0B3A52;
+    --hero-bottom: #072536;
+    --hero-ink: #E8F3F8;
+    --hero-soft: #9FC3D3;
+    --chip-cran: #4A8A2C;
+    --shadow: 0 1px 2px rgba(11, 42, 60, .06), 0 8px 24px rgba(11, 42, 60, .07);
+    --display: "Avenir Next", "Avenir", Futura, "Century Gothic", "Segoe UI", system-ui, sans-serif;
+    --body: Charter, "Bitstream Charter", Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #08202E;
+      --ground-deep: #071B28;
+      --ground-deeper: #061723;
+      --panel: #0D2C3D;
+      --ink: #D7E7EE;
+      --ink-soft: #A4C2CF;
+      --ink-faint: #7C9DAC;
+      --accent: #5FA8DC;
+      --accent-ink: #79B8E6;
+      --hairline: #1D4356;
+      --hero-top: #0A3149;
+      --hero-bottom: #05141F;
+      --chip-cran: #7DC855;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #F2F7F9;
+    --ground-deep: #E4EEF2;
+    --ground-deeper: #D6E5EB;
+    --panel: #FFFFFF;
+    --ink: #123344;
+    --ink-soft: #3E5A69;
+    --ink-faint: #64808E;
+    --accent: #1263B2;
+    --accent-ink: #0E538F;
+    --hairline: #C3D6DE;
+    --hero-top: #0B3A52;
+    --hero-bottom: #072536;
+    --chip-cran: #4A8A2C;
+    --shadow: 0 1px 2px rgba(11, 42, 60, .06), 0 8px 24px rgba(11, 42, 60, .07);
+  }
+  :root[data-theme="dark"] {
+    --ground: #08202E;
+    --ground-deep: #071B28;
+    --ground-deeper: #061723;
+    --panel: #0D2C3D;
+    --ink: #D7E7EE;
+    --ink-soft: #A4C2CF;
+    --ink-faint: #7C9DAC;
+    --accent: #5FA8DC;
+    --accent-ink: #79B8E6;
+    --hairline: #1D4356;
+    --hero-top: #0A3149;
+    --hero-bottom: #05141F;
+    --chip-cran: #7DC855;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+  h1, h2, h3, .wordmark, .btn, nav, .chip, .eyebrow {
+    font-family: var(--display);
+  }
+  h1, h2, h3 { text-wrap: balance; line-height: 1.15; }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- header ---------- */
+  .site-head {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  }
+  .site-head .wrap {
+    display: flex; align-items: center; gap: 1.75rem;
+    padding-top: 1.25rem; padding-bottom: 1.25rem;
+  }
+  .wordmark {
+    color: var(--hero-ink); font-weight: 600; font-size: 1.125rem;
+    letter-spacing: .01em; text-decoration: none;
+    display: flex; align-items: center; gap: .55rem;
+  }
+  .wordmark svg { display: block; }
+  .site-head nav { margin-left: auto; display: flex; gap: 1.4rem; }
+  .site-head nav a {
+    color: var(--hero-soft); text-decoration: none;
+    font-size: .85rem; letter-spacing: .06em; text-transform: uppercase;
+  }
+  .site-head nav a:hover { color: var(--hero-ink); }
+  @media (max-width: 640px) { .site-head nav { display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    background: linear-gradient(178deg, var(--hero-top), var(--hero-bottom) 90%);
+    color: var(--hero-ink);
+    overflow: hidden;
+  }
+  .hero canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .hero .wrap {
+    position: relative; z-index: 2;
+    padding-top: 8.5rem; padding-bottom: 5.5rem;
+  }
+  .hero-row { display: flex; align-items: center; gap: 3.5rem; }
+  .hero-copy { flex: 1 1 32rem; }
+  .hero-hex { flex: 0 0 auto; }
+  .hero-hex img {
+    display: block; width: clamp(180px, 22vw, 260px); height: auto;
+    filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .35));
+    animation: bob 7s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+    50% { transform: translateY(-12px) rotate(1.5deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .hero-hex img { animation: none; } }
+  @media (max-width: 760px) { .hero-hex { display: none; } }
+  .eyebrow {
+    font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--hero-soft);
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+    font-weight: 700; letter-spacing: -.015em;
+    max-width: 17ch; margin: .75rem 0 1.1rem;
+  }
+  .hero p.lede {
+    max-width: 56ch; font-size: 1.15rem; color: var(--hero-soft);
+  }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
+  .btn {
+    display: inline-block; text-decoration: none;
+    font-weight: 600; font-size: .95rem;
+    padding: .65rem 1.25rem; border-radius: 6px;
+    border: 1px solid transparent;
+  }
+  .btn-solid { background: var(--hero-ink); color: #0B3149; }
+  .btn-solid:hover { background: #FFFFFF; }
+  .btn-ghost { border-color: var(--hero-soft); color: var(--hero-ink); }
+  .btn-ghost:hover { border-color: var(--hero-ink); }
+  .hero .stats {
+    display: flex; flex-wrap: wrap; gap: 2.5rem;
+    margin-top: 3.25rem; padding-top: 1.5rem;
+    border-top: 1px solid rgba(159, 195, 211, .3);
+  }
+  .stat b {
+    display: block; font-family: var(--mono); font-size: 1.35rem;
+    font-variant-numeric: tabular-nums; font-weight: 600;
+  }
+  .stat span { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--hero-soft); font-family: var(--display); }
+
+  /* ---------- sections ---------- */
+  section { padding: 4.5rem 0; }
+  section + section { border-top: 1px solid var(--hairline); }
+  #data { background: var(--ground-deep); }
+  #teach { background: var(--ground-deeper); }
+  .sec-head { max-width: 62ch; margin-bottom: 2.25rem; }
+  .sec-head .eyebrow { color: var(--accent-ink); }
+  .sec-head h2 { font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em; margin: .4rem 0 .7rem; }
+  .sec-head p { color: var(--ink-soft); }
+
+  .cards { display: grid; gap: 1.1rem; }
+  .cards.two { grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr)); }
+  .cards.four { grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr)); }
+  .card {
+    background: var(--panel); border: 1px solid var(--hairline);
+    border-radius: 8px; padding: 1.4rem 1.5rem;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: .6rem;
+  }
+  .card h3 { font-size: 1.05rem; font-weight: 600; }
+  .card h3 code, .card .pkg { font-family: var(--mono); font-size: .95em; }
+  .card p { font-size: .95rem; color: var(--ink-soft); flex-grow: 1; }
+  .card .links { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; font-family: var(--display); font-size: .85rem; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .hex-sm, .hex-md { width: 92px; height: auto; flex: 0 0 auto; margin-top: -.2rem; filter: drop-shadow(0 3px 6px rgba(11, 42, 60, .18)); }
+  .chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .chip {
+    font-size: .7rem; letter-spacing: .07em; text-transform: uppercase;
+    border: 1px solid var(--hairline); color: var(--ink-faint);
+    padding: .12rem .5rem; border-radius: 999px;
+  }
+  .chip.cran { border-color: var(--chip-cran); color: var(--chip-cran); }
+
+  /* featured book card */
+  .book-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.1rem; }
+  @media (max-width: 800px) { .book-grid { grid-template-columns: 1fr; } }
+  .book-main { padding: 1.9rem 2rem; }
+  .book-main h3 { font-size: 1.45rem; font-weight: 700; }
+  .book-main .sub { font-style: italic; color: var(--ink-faint); font-size: 1rem; }
+  .book-main p { font-size: 1rem; }
+  .aside-stack { display: flex; flex-direction: column; gap: 1.1rem; }
+
+  /* ---------- footer ---------- */
+  footer {
+    background: var(--hero-bottom); color: var(--hero-soft);
+    padding: 2.75rem 0; font-size: .92rem;
+  }
+  footer a { color: var(--hero-ink); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 3rem; justify-content: space-between; }
+</style>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="wordmark" href="#">
+      <img src="images/moderndive-hex.png" width="24" height="28" alt="">
+      ModernDive
+    </a>
+    <nav aria-label="Sections">
+      <a href="#book">Book</a>
+      <a href="#packages">Packages</a>
+      <a href="#data">Data</a>
+      <a href="#teach">Teaching</a>
+      <a href="https://github.com/moderndive">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <canvas id="bubbles" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="hero-row">
+      <div class="hero-copy">
+        <p class="eyebrow">The ModernDive organization on GitHub</p>
+        <h1>Dive into statistics through data science</h1>
+        <p class="lede">ModernDive is home to an open-source textbook, tidyverse-friendly R and Python packages, and ready-to-teach datasets — everything you need to learn or teach statistical inference by working with real data.</p>
+        <div class="actions">
+          <a class="btn btn-solid" href="https://moderndive.com/v2/">Read the book</a>
+          <a class="btn btn-ghost" href="https://github.com/moderndive">Browse the organization</a>
+        </div>
+      </div>
+      <figure class="hero-hex">
+        <img src="images/moderndive-hex.png" alt="ModernDive hex logo: a snorkel mask under a wave with a rising bar chart">
+      </figure>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>800+</b><span>GitHub stars</span></div>
+      <div class="stat"><b>530+</b><span>Forks</span></div>
+      <div class="stat"><b>12</b><span>Open repositories</span></div>
+      <div class="stat"><b>2</b><span>Languages: R &amp; Python</span></div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section id="book">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">The book</p>
+        <h2>Statistical Inference via Data Science</h2>
+        <p>A free, open-source textbook by Chester Ismay, Albert Y. Kim, and Arturo Valdivia that teaches statistical inference the way it is practiced: starting from real data, wrangling and visualizing it, then building up to sampling, confidence intervals, hypothesis testing, and regression.</p>
+      </div>
+      <div class="book-grid">
+        <div class="card book-main">
+          <h3>ModernDive, Second Edition</h3>
+          <p class="sub">A ModernDive into R and the Tidyverse</p>
+          <p>The current edition, fully revised and freely readable online. Built around the <code class="pkg">tidyverse</code>, <code class="pkg">infer</code>, and <code class="pkg">moderndive</code> packages, with exercises and real datasets throughout — also available in print from CRC Press.</p>
+          <div class="links">
+            <a href="https://moderndive.com/v2/">Read v2 online</a>
+            <a href="https://github.com/moderndive/ModernDive_book">Source on GitHub</a>
+          </div>
+        </div>
+        <div class="aside-stack">
+          <div class="card">
+            <h3>First edition</h3>
+            <p>The original ModernDive, still online for courses that use it.</p>
+            <div class="links"><a href="https://moderndive.com/">Read v1</a></div>
+          </div>
+          <div class="card">
+            <h3>Open development</h3>
+            <p>The book is written in the open — file issues, suggest edits, or fork it.</p>
+            <div class="links"><a href="https://github.com/moderndive/ModernDive_book/issues">Issue tracker</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="packages">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Software</p>
+        <h2>Companion packages for R and Python</h2>
+        <p>The same tidy, simulation-first approach to inference and regression, in whichever language your course runs.</p>
+      </div>
+      <div class="cards two">
+        <div class="card">
+          <div class="card-top">
+            <div class="chips"><span class="chip">R</span><span class="chip cran">CRAN</span></div>
+            <img class="hex-md" src="images/moderndive-hex.png" alt="moderndive R package hex sticker">
+          </div>
+          <h3><code>moderndive</code></h3>
+          <p>Tidyverse-friendly introductory linear regression: <code class="pkg">get_regression_table()</code>, <code class="pkg">get_regression_points()</code>, wrapper functions designed for first courses, plus all datasets used in the book.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/moderndive/">Documentation</a>
+            <a href="https://cran.r-project.org/package=moderndive">CRAN</a>
+            <a href="https://github.com/moderndive/moderndive">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div class="chips"><span class="chip">Python</span><span class="chip cran">PyPI</span></div>
+            <img class="hex-md" src="images/moderndive-python-logo.png" alt="moderndive Python package hex sticker: a python wearing a dive mask">
+          </div>
+          <h3><code>moderndive</code> for Python</h3>
+          <p>The Python companion: a tidy simulation-based inference grammar modeled on <code class="pkg">infer</code>, regression helpers, the book's datasets, and dual-engine plotting with plotly and plotnine.</p>
+          <div class="links">
+            <a href="https://moderndive.readthedocs.io">Documentation</a>
+            <a href="https://pypi.org/project/moderndive/">PyPI</a>
+            <a href="https://github.com/moderndive/moderndive-python">GitHub</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="data">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Data packages</p>
+        <h2>Real datasets, ready to teach with</h2>
+        <p>Tidy, documented R data packages in the spirit of <code class="pkg">nycflights13</code> — current enough that students recognize the world in them.</p>
+      </div>
+      <div class="cards four">
+        <div class="card">
+          <div class="chips"><span class="chip">R data</span><span class="chip cran">CRAN</span></div>
+          <h3><code>nycflights23</code></h3>
+          <p>All outbound flights from New York City in 2023, with weather, planes, airports, and airline metadata.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/nycflights23/">Docs</a>
+            <a href="https://github.com/moderndive/nycflights23">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip">R data</span></div>
+          <h3><code>nycflights22</code></h3>
+          <p>All outbound flights from New York City in 2022 — pair with 2023 to study year-over-year change.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/nycflights22/">Docs</a>
+            <a href="https://github.com/moderndive/nycflights22">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip">R data</span></div>
+          <h3><code>pnwflights22</code></h3>
+          <p>Outbound flights from Seattle and Portland in 2022, for a Pacific Northwest take on the flights data.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/pnwflights22/">Docs</a>
+            <a href="https://github.com/moderndive/pnwflights22">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="chips"><span class="chip">R data</span></div>
+          <h3><code>azflights24</code></h3>
+          <p>Outbound commercial flights from Arizona's primary airports in 2024, plus supporting metadata.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/azflights24/">Docs</a>
+            <a href="https://github.com/moderndive/azflights24">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div class="chips"><span class="chip">R data</span></div>
+            <img class="hex-sm" src="images/olympicAthletes-hex.png" alt="olympicAthletes hex sticker">
+          </div>
+          <h3><code>olympicAthletes</code></h3>
+          <p>Every athlete-event in the modern Olympics, Athens 1896 through Milano-Cortina 2026 — about 315,000 rows.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/olympicAthletes/">Docs</a>
+            <a href="https://github.com/moderndive/olympicAthletes">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div class="chips"><span class="chip">R data</span><span class="chip cran">CRAN</span></div>
+            <img class="hex-sm" src="images/steves-hex.png" alt="steves hex sticker">
+          </div>
+          <h3><code>steves</code></h3>
+          <p>A tidy snapshot of every Rick Steves' Europe episode from 2000 to 2025, for teaching data analysis with a passport.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/steves/">Docs</a>
+            <a href="https://github.com/moderndive/steves">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div class="chips"><span class="chip">R data</span><span class="chip cran">CRAN</span></div>
+            <img class="hex-sm" src="images/exoplanetdata-hex.png" alt="exoplanetdata hex sticker">
+          </div>
+          <h3><code>exoplanetdata</code></h3>
+          <p>Confirmed exoplanets and their host stars from NASA's Exoplanet Archive, tidied for the classroom.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/exoplanetdata/">Docs</a>
+            <a href="https://github.com/moderndive/exoplanetdata">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div class="chips"><span class="chip">R data</span><span class="chip cran">CRAN</span></div>
+            <picture>
+              <source media="(prefers-reduced-motion: reduce)" srcset="images/volcanoes-hex.png">
+              <img class="hex-sm" src="images/volcanoes-hex.gif" alt="Animated volcanoes hex sticker with an erupting volcano">
+            </picture>
+          </div>
+          <h3><code>volcanoes</code></h3>
+          <p>Around 1,200 Holocene volcanoes with their eruptions and events, from the Smithsonian Global Volcanism Program.</p>
+          <div class="links">
+            <a href="https://moderndive.github.io/volcanoes/">Docs</a>
+            <a href="https://github.com/moderndive/volcanoes">GitHub</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teach">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">For instructors</p>
+        <h2>Teach a course with ModernDive</h2>
+        <p>Labs, problem sets, and instructor resources built to pair with the book — used in intro statistics and data science courses worldwide.</p>
+      </div>
+      <div class="cards two">
+        <div class="card">
+          <h3>Labs &amp; course materials</h3>
+          <p>Ready-to-adapt lab exercises and resources for running a ModernDive-based course, openly available.</p>
+          <div class="links">
+            <a href="https://moderndive.com/labs">Browse the labs</a>
+            <a href="https://github.com/moderndive/moderndive_labs">GitHub</a>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Instructor resources</h3>
+          <p>Additional instructor-only materials for ModernDive v2 are available to verified instructors — sign up to request access.</p>
+          <div class="links">
+            <a href="https://moderndive.us15.list-manage.com/subscribe?u=87888fab720da90906427a5be&amp;id=0c9e2d1df2">Request instructor access</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>ModernDive — open resources by <a href="https://chester.rbind.io/">Chester Ismay</a>, <a href="https://rudeboybert.rbind.io/">Albert Y. Kim</a>, and <a href="https://avaldivi6.github.io">Arturo Valdivia</a>.</div>
+    <div><a href="https://github.com/moderndive">github.com/moderndive</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var canvas = document.getElementById('bubbles');
+  if (!canvas || !canvas.getContext) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var ctx = canvas.getContext('2d');
+  var bubbles = [], raf = null;
+
+  function size() {
+    var r = canvas.parentElement.getBoundingClientRect();
+    canvas.width = r.width * devicePixelRatio;
+    canvas.height = r.height * devicePixelRatio;
+  }
+  function seed() {
+    bubbles = [];
+    for (var i = 0; i < 26; i++) {
+      bubbles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: (1 + Math.random() * 2.6) * devicePixelRatio,
+        v: (0.12 + Math.random() * 0.35) * devicePixelRatio,
+        drift: Math.random() * Math.PI * 2
+      });
+    }
+  }
+  function draw(move) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'rgba(190, 220, 235, 0.35)';
+    ctx.lineWidth = devicePixelRatio;
+    bubbles.forEach(function (b) {
+      if (move) {
+        b.y -= b.v;
+        b.drift += 0.01;
+        b.x += Math.sin(b.drift) * 0.15 * devicePixelRatio;
+        if (b.y < -b.r) { b.y = canvas.height + b.r; b.x = Math.random() * canvas.width; }
+      }
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+  }
+  function loop() { draw(true); raf = requestAnimationFrame(loop); }
+  function start() {
+    size(); seed();
+    if (raf) cancelAnimationFrame(raf);
+    if (reduced.matches) { draw(false); raf = null; } else { loop(); }
+  }
+  window.addEventListener('resize', start);
+  reduced.addEventListener('change', start);
+  start();
+})();
+</script>
+</body>
+</html>
