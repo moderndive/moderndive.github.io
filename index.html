@@ -272,9 +272,9 @@
       </figure>
     </div>
     <div class="stats">
-      <div class="stat"><b>800+</b><span>GitHub stars</span></div>
-      <div class="stat"><b>530+</b><span>Forks</span></div>
-      <div class="stat"><b>12</b><span>Open repositories</span></div>
+      <div class="stat"><b data-stat="stars">800+</b><span>GitHub stars</span></div>
+      <div class="stat"><b data-stat="forks">530+</b><span>Forks</span></div>
+      <div class="stat"><b data-stat="repos">12</b><span>Open repositories</span></div>
       <div class="stat"><b>2</b><span>Languages: R &amp; Python</span></div>
     </div>
   </div>
@@ -487,6 +487,25 @@
 </footer>
 
 <script>
+(function () {
+  // Live org-wide stats; the hardcoded numbers remain as a fallback.
+  fetch('https://api.github.com/orgs/moderndive/repos?per_page=100')
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (repos) {
+      var totals = repos.reduce(function (t, r) {
+        t.stars += r.stargazers_count; t.forks += r.forks_count; return t;
+      }, { stars: 0, forks: 0 });
+      var set = function (key, n) {
+        var el = document.querySelector('[data-stat="' + key + '"]');
+        if (el && n > 0) el.textContent = n.toLocaleString('en-US');
+      };
+      set('stars', totals.stars);
+      set('forks', totals.forks);
+      set('repos', repos.length);
+    })
+    .catch(function () { /* keep fallback numbers */ });
+})();
+
 (function () {
   var canvas = document.getElementById('bubbles');
   if (!canvas || !canvas.getContext) return;
