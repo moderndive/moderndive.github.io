@@ -21,5 +21,8 @@ jobs:
       - name: Check links in index.html
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --accept "200,204,206,301,302,308,403,429" index.html
+          # rudeboybert.rbind.io excluded 2026-08-03: its custom-domain TLS
+          # cert is broken (serves *.netlify.app's cert) — Albert's side to
+          # fix; plain HTTP works. Re-include once his cert is reissued.
+          args: --no-progress --accept "200,204,206,301,302,308,403,429" --exclude "rudeboybert.rbind.io" index.html
           fail: true
