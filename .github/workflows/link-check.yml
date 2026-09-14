@@ -18,11 +18,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+      # We install lychee ourselves instead of using lycheeverse/lychee-action
+      # so the binary download (a GitHub-releases fetch that has flaked
+      # transiently, e.g. the 2026-09-14 cron run) can be retried. The action
+      # exposes no retry knob for its internal setup step.
+      - name: Install lychee (retry on transient download failures)
+        run: |
+          set -euo pipefail
+          url="https://github.com/lycheeverse/lychee/releases/latest/download/lychee-x86_64-unknown-linux-gnu.tar.gz"
+          for attempt in 1 2 3; do
+            if curl -sfL -o lychee.tar.gz "$url"; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "lychee download failed after 3 attempts" >&2
+              exit 1
+            fi
+            wait=$((attempt * 5))
+            echo "Download attempt $attempt failed; retrying in ${wait}s" >&2
+            sleep "$wait"
+          done
+          tar -xzf lychee.tar.gz
+          sudo install -m 0755 lychee /usr/local/bin/lychee
+          rm -f lychee.tar.gz lychee
+          lychee --version
+
       - name: Check links in index.html
-        uses: lycheeverse/lychee-action@v2
-        with:
-          # rudeboybert.rbind.io excluded 2026-08-03: its custom-domain TLS
-          # cert is broken (serves *.netlify.app's cert) — Albert's side to
-          # fix; plain HTTP works. Re-include once his cert is reissued.
-          args: --no-progress --accept "200,204,206,301,302,308,403,429" --exclude "rudeboybert.rbind.io" index.html
-          fail: true
+        # rudeboybert.rbind.io excluded 2026-08-03: its custom-domain TLS
+        # cert is broken (serves *.netlify.app's cert), Albert's side to
+        # fix; plain HTTP works. Re-include once his cert is reissued.
+        # A non-zero lychee exit (broken links) fails the step under `set -e`,
+        # matching the action's old `fail: true`.
+        # GITHUB_TOKEN lets lychee authenticate github.com link checks; without
+        # it the repo links rate-limit (504) as they did in local testing. The
+        # lychee-action set this up for us; the direct call must pass it too.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          lychee --no-progress \
+            --accept "200,204,206,301,302,308,403,429" \
+            --exclude "rudeboybert.rbind.io" \
+            index.html
