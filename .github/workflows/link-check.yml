@@ -39,9 +39,17 @@ jobs:
             echo "Download attempt $attempt failed; retrying in ${wait}s" >&2
             sleep "$wait"
           done
-          tar -xzf lychee.tar.gz
-          sudo install -m 0755 lychee /usr/local/bin/lychee
-          rm -f lychee.tar.gz lychee
+          mkdir -p lychee-extract
+          tar -xzf lychee.tar.gz -C lychee-extract
+          # Recent releases wrap the binary in a top-level folder
+          # (lychee-<arch>/lychee), so locate it rather than assume a path.
+          bin="$(find lychee-extract -type f -name lychee | head -n1)"
+          if [ -z "$bin" ]; then
+            echo "lychee binary not found in archive" >&2
+            exit 1
+          fi
+          sudo install -m 0755 "$bin" /usr/local/bin/lychee
+          rm -rf lychee.tar.gz lychee-extract
           lychee --version
 
       - name: Check links in index.html
